@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { ChevronDown, Minus, X } from 'lucide-react';
 import { invoke } from '@tauri-apps/api/core';
+import { getCurrentWindow } from '@tauri-apps/api/window';
 
 type VisualSettings = { brightness: number; contrast: number; saturation: number; hue: number };
 type Profile = VisualSettings & { id: string; name: string; updatedAt: number };
@@ -24,7 +25,7 @@ function App() {
   const [profiles, setProfiles] = useState<Profile[]>(() => read('ether-profiles', initialProfiles));
   const [activeId, setActiveId] = useState(() => read('ether-active', ''));
   const [profileName, setProfileName] = useState('');
-  const [runAtStartup, setRunAtStartup] = useState(false);
+  const window = getCurrentWindow();
 
   useEffect(() => {
     localStorage.setItem('ether-settings', JSON.stringify(settings));
@@ -86,8 +87,8 @@ function App() {
           <span>Risxn Visuals</span>
         </div>
         <div className="topbar-actions">
-          <button className="window-button minimize" title="Minimize"><Minus size={16} strokeWidth={2.5} /></button>
-          <button className="window-button close" title="Close"><X size={16} strokeWidth={2.5} /></button>
+          <button className="window-button minimize" title="Minimize" onClick={() => void window.minimize()}><Minus size={16} strokeWidth={2.5} /></button>
+          <button className="window-button close" title="Close" onClick={() => void window.close()}><X size={16} strokeWidth={2.5} /></button>
         </div>
       </header>
 
@@ -122,13 +123,6 @@ function App() {
             <button className="solid-button" onClick={createProfile} disabled={!profileName.trim()}>Create profile</button>
           </div>
 
-          <label className="checkbox-wrap">
-            <input type="checkbox" checked={runAtStartup} onChange={(e) => setRunAtStartup(e.target.checked)} />
-            <span className="checkmark">
-              {runAtStartup && <svg viewBox="0 0 14 14" fill="none"><path d="M3 7L6 10L11 4" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>}
-            </span>
-            Run at Windows startup
-          </label>
         </aside>
       </div>
     </main>
