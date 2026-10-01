@@ -1,0 +1,46 @@
+{
+  "$schema": "https://schema.tauri.app/config/2",
+  "productName": "Risxn Visuals",
+  "version": "0.1.0",
+  "identifier": "com.risxn.visuals",
+  "build": {
+    "beforeDevCommand": "npm run dev",
+    "devUrl": "http://localhost:1420",
+    "beforeBuildCommand": "npm run build",
+    "frontendDist": "../dist"
+  },
+  "app": {
+    "windows": [
+      {
+        "label": "main",
+        "title": "Risxn Visuals",
+        "width": 1120,
+        "height": 760,
+        "minWidth": 900,
+        "minHeight": 640,
+        "resizable": true,
+        "decorations": false,
+        "transparent": false,
+        "center": true
+      }
+    ],
+    "security": { "csp": null }
+  },
+  "bundle": {
+    "active": true,
+    "createUpdaterArtifacts": true,
+    "targets": "all",
+    "icon": ["icons/icon.png"]
+  },
+  "plugins": {
+    "updater": {
+      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDgzNkI0NDFFRjVGQjQzOTYKUldTV1EvdjFIa1JyZzMzVUlCVGpFSjkvcGdPNWY3WnhTellOcC9UNGhUcldDanF0MFpDZ3pyVXMK",
+      "endpoints": [
+        "https://github.com/vxyaq/risxn-visuals/releases/latest/download/latest.json"
+      ],
+      "windows": {
+        "installMode": "passive"
+      }
+    }
+  }
+}
