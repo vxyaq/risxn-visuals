@@ -305,6 +305,7 @@ mod nvapi {
         unsafe extern "C" fn(NvDisplayHandle, u32, *mut DisplayDvcInfo) -> NvApiStatus;
     type SetDvcLevelEx =
         unsafe extern "C" fn(NvDisplayHandle, u32, *mut DisplayDvcInfo) -> NvApiStatus;
+    type SetDvcLevel = unsafe extern "C" fn(NvDisplayHandle, u32, i32) -> NvApiStatus;
     type SetHueAngle = unsafe extern "C" fn(NvDisplayHandle, u32, i32) -> NvApiStatus;
 
     const NVAPI_OK: NvApiStatus = 0;
@@ -312,7 +313,8 @@ mod nvapi {
     const QUERY_ENUM_NVIDIA_DISPLAY_HANDLE: u32 = 0x9ABDD40D;
     const QUERY_GET_DVC_INFO_EX: u32 = 0x0E45002D;
     const QUERY_SET_DVC_LEVEL_EX: u32 = 0x4A82C2B1;
-    const QUERY_SET_HUE_ANGLE: u32 = 0x59511C5E;
+    const QUERY_SET_DVC_LEVEL: u32 = 0x172409B4;
+    const QUERY_SET_HUE_ANGLE: u32 = 0x0F5A0F22;
 
     #[repr(C)]
     #[derive(Debug, Copy, Clone)]
@@ -378,6 +380,12 @@ mod nvapi {
 
                 if set_dvc_level(display_handle, 0, &mut dvc_info) == NVAPI_OK {
                     dvc_applied = true;
+                } else {
+                    let set_dvc_legacy_ptr = nvapi_query_interface(QUERY_SET_DVC_LEVEL);
+                    if !set_dvc_legacy_ptr.is_null() {
+                        let set_dvc_legacy: SetDvcLevel = std::mem::transmute(set_dvc_legacy_ptr);
+                        dvc_applied = set_dvc_legacy(display_handle, 0, target_level) == NVAPI_OK;
+                    }
                 }
             }
         }
@@ -386,7 +394,7 @@ mod nvapi {
         let set_hue_ptr = nvapi_query_interface(QUERY_SET_HUE_ANGLE);
         if !set_hue_ptr.is_null() {
             let set_hue_angle: SetHueAngle = std::mem::transmute(set_hue_ptr);
-            let target_hue = ((hue + 180.0) % 360.0) as i32;
+            let target_hue = hue.clamp(-180.0, 180.0).round() as i32;
 
             if set_hue_angle(display_handle, 0, target_hue) == NVAPI_OK {
                 hue_applied = true;

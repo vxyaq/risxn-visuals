@@ -1,6 +1,6 @@
 [package]
 name = "risxn-visuals"
-version = "0.1.2"
+version = "0.1.3"
 description = "Risxn Visuals display color control"
 authors = ["Risxn Visuals"]
 edition = "2021"
